@@ -1,0 +1,70 @@
+# -------------------------------- #
+#                                  #
+#             Operators            #
+#                                  #
+# -------------------------------- #
+#
+# These might seem confusing, but they aren't
+# createBuy and createSell speak for themselves.
+#
+# On the other hand, buy and sell are a bit weird:
+# First part of the declaration is from the seller's
+# point of view, while the second half is from the
+# buyer's point of view.
+
+createBuy: "[buy]"
+createSell: "[sell]"
+
+buy: "Sell"
+sell: "Buy"
+
+# -------------------------------- #
+#                                  #
+#            Formatting            #
+#                                  #
+# -------------------------------- #
+#
+# Customize the formatting of the sign
+# - Line 1: "&0{&c <Buy | Sell>&0 }"
+# - Line 2: "&0<price> for x<amount>"
+# - Line 3: "&n<item>"
+# - Line 4: "&0<player>"
+#
+# Further you can also set some limits
+# for the price and the amount.
+
+signFormat:
+  - "&0{&c {0}&0 }"
+  - "&0{0} for x{1}"
+  - "&n{0}"
+  - "&0{0}"
+
+maxPrice: 1000000
+maxAmount: 64
+
+# -------------------------------- #
+#                                  #
+#           Permissions            #
+#                                  #
+# -------------------------------- #
+#
+# Here you can set your own permission nodes,
+# mind you that those will not be registered
+# by permission plugins yet.
+
+createBuyPermission: "chestshop.create.buy"
+createSellPermission: "chestshop.create.sell"
+
+# -------------------------------- #
+#                                  #
+#             Messages             #
+#                                  #
+# -------------------------------- #
+#
+# Customize the messages the way you want,
+# includes normal color code support.
+
+invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid item."
+invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
+invalidPrice: "&8&l[&c&li&8&l]&7 Sorry, but the price you entered is invalid or too high."
+missingArguments: "&8&l[&c&li&8&l]&7 It seems like you forgot to include some useful information."

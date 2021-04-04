@@ -1,0 +1,6 @@
+name: Chestshop
+version: 1.0-SNAPSHOT
+main: eu.lukatjee.chestshop.Chestshop
+api-version: 1.16
+authors: [ Lukatjee ]
+description: Chestshop plugin

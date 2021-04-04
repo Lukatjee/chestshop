@@ -1,0 +1,5 @@
+eu\lukatjee\chestshop\commands\MainCommand.class
+eu\lukatjee\chestshop\events\createBuyShop.class
+eu\lukatjee\chestshop\events\createSellShop.class
+eu\lukatjee\chestshop\commandHandlers\Help.class
+eu\lukatjee\chestshop\Chestshop.class
