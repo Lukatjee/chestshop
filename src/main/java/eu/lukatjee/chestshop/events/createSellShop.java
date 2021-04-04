@@ -1,11 +1,12 @@
 package eu.lukatjee.chestshop.events;
 
-import eu.lukatjee.chestshop.Chestshop;
+import eu.lukatjee.chestshop.chestShop;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,10 +22,12 @@ public class createSellShop implements Listener {
     @EventHandler
     public void onCreateSign(SignChangeEvent event) {
 
+        FileConfiguration configuration = chestShop.plugin.getConfig();
+
         if (!event.isCancelled()) {
 
             Player player = event.getPlayer();
-            String createSellPermission = Chestshop.configuration.getString("createSellPermission");
+            String createSellPermission = configuration.getString("createSellPermission");
 
             if (player.hasPermission(createSellPermission)) {
 
@@ -41,7 +44,7 @@ public class createSellShop implements Listener {
                 if (attachedBlock.getState() instanceof Chest) {
 
                     Chest chest = (Chest) attachedBlock.getState();
-                    String createSell = Chestshop.configuration.getString("createSell");
+                    String createSell = configuration.getString("createSell");
 
                     if (event.getLine(0).equals(createSell)) {
 
@@ -87,8 +90,8 @@ public class createSellShop implements Listener {
 
                             */
 
-                            double maxPrice = Chestshop.configuration.getInt("maxPrice");
-                            int maxAmount = Chestshop.configuration.getInt("maxAmount");
+                            double maxPrice = configuration.getInt("maxPrice");
+                            int maxAmount = configuration.getInt("maxAmount");
 
                             if (price <= maxPrice && price != -1) {
 
@@ -143,9 +146,9 @@ public class createSellShop implements Listener {
 
                                     if (item != null) {
 
-                                        String[] signLines = Chestshop.configuration.getStringList("signFormat").toArray(new String[0]);
+                                        String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
 
-                                        String shopType = Chestshop.configuration.getString("sell");
+                                        String shopType = configuration.getString("sell");
                                         String playerName = player.getName();
 
                                         event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", shopType)));
@@ -162,28 +165,28 @@ public class createSellShop implements Listener {
 
                                     } else {
 
-                                        String invalidItem = Chestshop.configuration.getString("invalidItem");
+                                        String invalidItem = configuration.getString("invalidItem");
                                         player.sendMessage(ChatColor.translateAlternateColorCodes('&', invalidItem));
 
                                     }
 
                                 } else {
 
-                                    String invalidAmount = Chestshop.configuration.getString("invalidAmount");
+                                    String invalidAmount = configuration.getString("invalidAmount");
                                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', invalidAmount));
 
                                 }
 
                             } else {
 
-                                String invalidPrice = Chestshop.configuration.getString("invalidPrice");
+                                String invalidPrice = configuration.getString("invalidPrice");
                                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', invalidPrice));
 
                             }
 
                         } else {
 
-                            String missingArguments = Chestshop.configuration.getString("missingArguments");
+                            String missingArguments = configuration.getString("missingArguments");
                             player.sendMessage(ChatColor.translateAlternateColorCodes('&', missingArguments));
 
                         }
