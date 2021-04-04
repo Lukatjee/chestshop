@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -92,10 +93,34 @@ public class createBuyShop implements Listener {
 
                                 if (amount <= maxAmount && amount != 0) {
 
-                                    NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+                                    NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+                                    DecimalFormat decimalFormat = new DecimalFormat("#.##");
+                                    String priceCurrency = null;
 
+                                    /*
 
-                                    String priceCurrency = format.format(price);
+                                        Convert price format to a value with K, M or B to avoid large numbers.
+
+                                     */
+
+                                    if (price < 1000) {
+
+                                        priceCurrency = currencyFormat.format(price);
+
+                                    } else if (price >= 1000 && price < 1000000) {
+
+                                        priceCurrency = "$" + decimalFormat.format((price / 1000)) + "K";
+
+                                    } else if (price >= 1000000 && price < 1000000000) {
+
+                                        priceCurrency = "$" + decimalFormat.format((price / 1000000)) + "M";
+
+                                    } else if (price >= 1000000000) {
+
+                                        priceCurrency = "$" + decimalFormat.format((price / 1000000000)) + "B";
+
+                                    }
+
                                     String item;
 
                                     /*
