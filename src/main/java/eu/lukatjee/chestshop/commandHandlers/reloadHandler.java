@@ -6,12 +6,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public class Reload {
+public class reloadHandler {
 
     public void ReloadCommand(CommandSender sender) {
 
         FileConfiguration configuration = chestShop.plugin.getConfig();
         chestShop plugin = chestShop.plugin;
+
+        /*
+
+            Handles the reloading of the configuration,
+            this is mainly used by the MainCommand class.
+
+         */
 
         if (sender instanceof Player) {
 

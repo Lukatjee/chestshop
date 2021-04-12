@@ -1,8 +1,8 @@
 package eu.lukatjee.chestshop.commands;
 
 import eu.lukatjee.chestshop.chestShop;
-import eu.lukatjee.chestshop.commandHandlers.Help;
-import eu.lukatjee.chestshop.commandHandlers.Reload;
+import eu.lukatjee.chestshop.commandHandlers.helpHandler;
+import eu.lukatjee.chestshop.commandHandlers.reloadHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainCommand implements CommandExecutor {
+public class mainCommand implements CommandExecutor {
 
 
     @Override
@@ -22,15 +22,22 @@ public class MainCommand implements CommandExecutor {
         List<Object> commandArguments = Arrays.asList("reload", "help");
         FileConfiguration configuration = chestShop.plugin.getConfig();
 
+        /*
+
+            Check if there are arguments given, if not it'll display the help menu
+            In any other case, it'll check what the argument is and provide a response/action.
+
+         */
+
         if (args.length == 0) {
 
-            Help help = new Help();
+            helpHandler help = new helpHandler();
 
         } else {
 
             if (args[0].equals("reload")) {
 
-                Reload reload = new Reload();
+                reloadHandler reload = new reloadHandler();
 
                 if (sender instanceof Player) {
 
@@ -52,6 +59,11 @@ public class MainCommand implements CommandExecutor {
                     reload.ReloadCommand(sender);
 
                 }
+
+            } else {
+
+                String unknownCommand = configuration.getString("unknownCommand");
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', unknownCommand));
 
             }
 

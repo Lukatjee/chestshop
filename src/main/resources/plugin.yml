@@ -4,6 +4,7 @@ main: eu.lukatjee.chestshop.chestShop
 api-version: 1.16
 authors: [ Lukatjee ]
 description: Chestshop plugin
+depend: [WildChests]
 commands:
   chestshop:
     description: Main command

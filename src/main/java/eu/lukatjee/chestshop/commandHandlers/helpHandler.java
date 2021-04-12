@@ -1,6 +1,6 @@
 package eu.lukatjee.chestshop.commandHandlers;
 
-public class Help {
+public class helpHandler {
 
 
 

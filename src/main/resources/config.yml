@@ -1,5 +1,20 @@
 # -------------------------------- #
 #                                  #
+#                SQL               #
+#                                  #
+# -------------------------------- #
+
+host: "localhost"
+port: "3306"
+database: "zoriontp"
+username: "root"
+password: ""
+
+# Only for experienced users
+arguments: "?useSSL=false&allowPublicKeyRetrieval=true"
+
+# -------------------------------- #
+#                                  #
 #             Operators            #
 #                                  #
 # -------------------------------- #
@@ -66,10 +81,13 @@ createSellPermission: "chestshop.create.sell"
 # Customize the messages the way you want,
 # includes normal color code support.
 
-reloadMessage: "&8&l[&c&li&8&l]&7 Successfully reloaded the chat configuration."
 noPermission: "&8&l[&c&li&8&l]&7 Sorry, but you do not have the permission to do this."
+unknownCommand: "&8&l[&c&li&8&l]&7 Unknown command. Execute /chestshop to get a list of commands."
+invalidArguments: "&8&l[&c&li&8&l]&7 It seems like the amount of arguments given are invalid."
 
+invalidContainer: "&8&l[&c&li&8&l]&7 Sorry, but this block is not a valid container."
 invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid item."
 invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
 invalidPrice: "&8&l[&c&li&8&l]&7 Sorry, but the price you entered is invalid or too high."
-missingArguments: "&8&l[&c&li&8&l]&7 It seems like you forgot to include some useful information."
+
+reloadMessage: "&8&l[&c&li&8&l]&7 Successfully reloaded the chat configuration."
