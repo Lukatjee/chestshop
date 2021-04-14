@@ -1,4 +1,3 @@
-eu\lukatjee\chestshop\utils\createUtil.class
 eu\lukatjee\chestshop\utils\currencyConversion.class
 eu\lukatjee\chestshop\events\deleteShop.class
 eu\lukatjee\chestshop\commandHandlers\helpHandler.class

@@ -83,8 +83,9 @@ createSellPermission: "chestshop.create.sell"
 
 noPermission: "&8&l[&c&li&8&l]&7 Sorry, but you do not have the permission to do this."
 unknownCommand: "&8&l[&c&li&8&l]&7 Unknown command. Execute /chestshop to get a list of commands."
-missingArguments: "&8&l[&c&li&8&l]&7 It seems like you forgot to include some useful information."
+invalidArguments: "&8&l[&c&li&8&l]&7 It seems like the amount of arguments given are invalid."
 
+invalidContainer: "&8&l[&c&li&8&l]&7 Sorry, but this block is not a valid container."
 invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid item."
 invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
 invalidPrice: "&8&l[&c&li&8&l]&7 Sorry, but the price you entered is invalid or too high."

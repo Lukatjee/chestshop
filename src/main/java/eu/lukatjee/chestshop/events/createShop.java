@@ -2,13 +2,12 @@ package eu.lukatjee.chestshop.events;
 
 import com.bgsoftware.wildchests.api.WildChestsAPI;
 import com.bgsoftware.wildchests.api.objects.ChestType;
-import com.bgsoftware.wildchests.api.objects.chests.Chest;
 import com.bgsoftware.wildchests.api.objects.chests.LinkedChest;
 import com.bgsoftware.wildchests.api.objects.chests.StorageChest;
 import eu.lukatjee.chestshop.chestShop;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -84,14 +83,19 @@ public class createShop implements Listener {
 
                         if (attachedObject != null) {
 
-                            Chest chest = WildChestsAPI.getChest(attachedObject.getLocation());
-                            ChestType chestType;
+                            boolean wildChestCheck = false;
+                            boolean chest = false;
+
+                            com.bgsoftware.wildchests.api.objects.chests.Chest wildChest = WildChestsAPI.getChest(attachedObject.getLocation());
+                            ChestType wildChestType;
+                            Chest vanillaChest = null;
 
                             /*
                              *
                              *  Once everything has been checked, the code will continue to gather info on the block
                              *  the sign is attached to, this will be done through the Wildchest API, this is a great
-                             *  API that handles a lot of chest related functionalities.
+                             *  API that handles a lot of chest related functionalities. Though, the regular chest handling
+                             *  is still present aswell as it's necessary for vanilla chests.
                              *
                              *  Though this is a great resource, it will not assign the normal ChestType to a vanilla chest,
                              *  hence a try-statement will collect data and check for vanilla minecraft chests and assign
@@ -101,23 +105,20 @@ public class createShop implements Listener {
 
                             try {
 
-                                chestType = chest.getChestType();
+                                wildChestType = wildChest.getChestType();
+
+                                wildChestCheck = true;
+                                chest = true;
 
                             } catch (NullPointerException exception) {
 
-                                if (attachedObject.getType() == Material.CHEST) {
+                                vanillaChest = (Chest) attachedObject.getState();
 
-                                    chestType = ChestType.CHEST;
-
-                                } else {
-
-                                    chestType = null;
-
-                                }
+                                chest = true;
 
                             }
 
-                            if (chestType != null) {
+                            if (chest) {
 
                                 String[] dataSecondLine = signObjectData[1].split(" ");
                                 double shopPrice = -1;
@@ -152,13 +153,35 @@ public class createShop implements Listener {
 
                                         if (shopPrice <= maximumPrice && shopAmount <= maximumAmount) {
 
-                                            if (chestType == ChestType.STORAGE_UNIT) {
+                                            if (wildChestCheck) {
 
-                                                StorageChest storageChest = (StorageChest) chest;
+                                                if (wildChest.getChestType() == ChestType.STORAGE_UNIT) {
 
-                                            } else if (chestType == ChestType.LINKED_CHEST) {
+                                                    StorageChest storageChest = (StorageChest) wildChest;
 
-                                                LinkedChest linkedChest = (LinkedChest) chest;
+                                                } else if (wildChest.getChestType() == ChestType.LINKED_CHEST) {
+
+                                                    LinkedChest linkedChest = (LinkedChest) wildChest;
+
+                                                } else if (wildChest.getChestType() == ChestType.CHEST) {
+
+                                                    // Large chest
+
+                                                }
+
+                                            } else {
+
+                                                int chestSize = vanillaChest.getInventory().getSize();
+
+                                                if (chestSize == 27) {
+
+                                                    // Gets the necessary information for a vanilla, single chest
+
+                                                } else if (chestSize == 54) {
+
+                                                    // Gets the necessary information for a vanilla, double chest
+
+                                                }
 
                                             }
 
