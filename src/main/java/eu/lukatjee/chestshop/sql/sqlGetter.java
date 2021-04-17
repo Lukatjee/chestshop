@@ -68,38 +68,23 @@ public class sqlGetter {
 
     }
 
-    public boolean readShop(String world, double x, double y, double z) {
+    public boolean checkShop(String world, int x, int y, int z) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN world AND ? IN x AND ? IN y AND ? IN z;");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (x) AND ? IN (y) AND ? IN (z);");
             preparedStatement.setString(1, world);
-            preparedStatement.setDouble(2, x);
-            preparedStatement.setDouble(3, y);
-            preparedStatement.setDouble(4, z);
+            preparedStatement.setInt(2, x);
+            preparedStatement.setInt(3, y);
+            preparedStatement.setInt(4, z);
 
             ResultSet result = preparedStatement.executeQuery();
 
             if (result != null && result.next()) {
 
-                UUID uuidResult = UUID.fromString(result.getString("uuid"));
-                String type = result.getString("type");
-                double price = result.getDouble("price");
-                Integer amount = result.getInt("amount");
-                String item = result.getString("item");
-
-                World worldResult = Bukkit.getServer().getWorld(result.getString("world"));
-                double xResult = result.getDouble("x");
-                double yResult = result.getDouble("y");
-                double zResult = result.getDouble("z");
-
-                Location location = new Location(worldResult, xResult, yResult, zResult);
-
-            } else {
-
-                return false;
+                return true;
 
             }
 
@@ -110,6 +95,48 @@ public class sqlGetter {
         }
 
         return false;
+    }
+
+    public void readShop(String world, int x, int y, int z) {
+
+        PreparedStatement preparedStatement;
+
+        try {
+
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN world AND ? IN x AND ? IN y AND ? IN z;");
+            preparedStatement.setString(1, world);
+            preparedStatement.setInt(2, x);
+            preparedStatement.setInt(3, y);
+            preparedStatement.setInt(4, z);
+
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result != null && result.next()) {
+
+                UUID playerUUID = UUID.fromString(result.getString("playerUUID"));
+                String shopType = result.getString("shopType");
+                String containerType = result.getString("containerType");
+                String container = result.getString("container");
+                double price = result.getDouble("price");
+                int amount = result.getInt("amount");
+                String itemType = result.getString("itemType");
+                String item = result.getString("item");
+
+                World worldResult = Bukkit.getServer().getWorld(result.getString("world"));
+                double xResult = result.getDouble("x");
+                double yResult = result.getDouble("y");
+                double zResult = result.getDouble("z");
+
+                Location location = new Location(worldResult, xResult, yResult, zResult);
+
+            }
+
+        } catch (SQLException exception) {
+
+            exception.printStackTrace();
+
+        }
+
     }
 
     public void removeWarp(String world, double x, double y, double z) {

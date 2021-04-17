@@ -38,6 +38,8 @@ public class createShop implements Listener {
             String invalidArgumentsMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidArguments"));
             String invalidItemMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidItem"));
             String invalidContainerMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidContainer"));
+            String shopExistsMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("shopExists"));
+            String shopCreatedMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("shopCreated"));
 
             String createSellId = configuration.getString("createSell");
             String createBuyId = configuration.getString("createBuy");
@@ -223,11 +225,23 @@ public class createShop implements Listener {
                                         double db_price = shopPrice; int db_amount = shopAmount;
 
                                         String db_itemType = "vanilla";
-                                        getter.createShop(
+                                        boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
 
-                                                db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
+                                        if (!shopExists) {
 
-                                        );
+                                            getter.createShop(
+
+                                                    db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
+
+                                            );
+
+                                            player.sendMessage(shopCreatedMessage);
+
+                                        } else {
+
+                                            player.sendMessage(shopExistsMessage);
+
+                                        }
 
                                     } else if ((shopPrice > maximumPrice) || (shopPrice <= -1)) {
 

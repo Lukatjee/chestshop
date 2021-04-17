@@ -85,6 +85,8 @@ noPermission: "&8&l[&c&li&8&l]&7 Sorry, but you do not have the permission to do
 unknownCommand: "&8&l[&c&li&8&l]&7 Unknown command. Execute /chestshop to get a list of commands."
 invalidArguments: "&8&l[&c&li&8&l]&7 It seems like the (amount of) given arguments are invalid."
 
+shopCreated: "&8&l[&c&li&8&l]&7 Successfully created a new chestshop."
+shopExists: "&8&l[&c&li&8&l]&7 This chest is already a chestshop."
 invalidContainer: "&8&l[&c&li&8&l]&7 Sorry, but this block is not a valid container."
 invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid item."
 invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
