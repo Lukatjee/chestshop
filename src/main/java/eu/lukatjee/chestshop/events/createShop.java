@@ -157,6 +157,13 @@ public class createShop implements Listener {
 
                                     if ((shopPrice > -1 && shopAmount > 0) && (shopPrice <= maximumPrice && shopAmount <= maximumAmount)) {
 
+                                        /*
+                                         *
+                                         *  Finally, once everything has been checked to be valid, the plugin gathers everything
+                                         *  it needs to store in the database and stores it if the chestshop does not exist yet.
+                                         *
+                                         */
+
                                         String db_playerUUID = player.getUniqueId().toString();
                                         String db_shopType = null;
 
@@ -284,7 +291,6 @@ public class createShop implements Listener {
                 player.sendMessage(noPermissionMessage);
 
             }
-
 
         }
 
