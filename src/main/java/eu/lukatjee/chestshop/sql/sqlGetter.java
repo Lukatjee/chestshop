@@ -26,7 +26,7 @@ public class sqlGetter {
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS chestshop_db (uuid VARCHAR(45), type VARCHAR(4), world VARCHAR(45), x DECIMAL(65,5), y DECIMAL(65,5), z DECIMAL(65,5), price DECIMAL(65,2), amount INT(45), item VARCHAR(55));");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS chestshop_db (playerUUID VARCHAR(255), shopType VARCHAR(255), containerType VARCHAR(255), container VARCHAR(255), world VARCHAR(255), x INT(65), y INT(65), z INT(65), price DECIMAL(65,25), amount INT(65), itemType VARCHAR(255), item VARCHAR(255));");
             preparedStatement.executeUpdate();
 
         } catch (SQLException exception) {
@@ -37,22 +37,25 @@ public class sqlGetter {
 
     }
 
-    public void createShop(String uuid, String type, String world, double x, double y, double z, double price, Integer amount, String item) {
+    public void createShop(String playerUUID, String shopType, String containerType, String container, String world, int x, int y, int z, double price, int amount, String itemType, String item) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("INSERT INTO chestshop_db (uuid, type, world, x, y, z, price, amount, item) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
-            preparedStatement.setString(1, uuid);
-            preparedStatement.setString(2, type);
-            preparedStatement.setString(3, world);
-            preparedStatement.setDouble(4, x);
-            preparedStatement.setDouble(5, y);
-            preparedStatement.setDouble(6, z);
-            preparedStatement.setDouble(7, price);
-            preparedStatement.setInt(8, amount);
-            preparedStatement.setString(9, item);
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("INSERT INTO chestshop_db (playerUUID, shopType, containerType, container, world, x, y, z, price, amount, itemType, item) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            preparedStatement.setString(1, playerUUID);
+            preparedStatement.setString(2, shopType);
+            preparedStatement.setString(3, containerType);
+            preparedStatement.setString(4, container);
+            preparedStatement.setString(5, world);
+            preparedStatement.setInt(6, x);
+            preparedStatement.setInt(7, y);
+            preparedStatement.setInt(8, z);
+            preparedStatement.setDouble(9, price);
+            preparedStatement.setInt(10, amount);
+            preparedStatement.setString(11, itemType);
+            preparedStatement.setString(12, item);
 
             preparedStatement.execute();
 
