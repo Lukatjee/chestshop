@@ -103,7 +103,7 @@ public class sqlGetter {
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN world AND ? IN x AND ? IN y AND ? IN z;");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (x) AND ? IN (y) AND ? IN (z);");
             preparedStatement.setString(1, world);
             preparedStatement.setInt(2, x);
             preparedStatement.setInt(3, y);
@@ -139,13 +139,13 @@ public class sqlGetter {
 
     }
 
-    public void removeWarp(String world, double x, double y, double z) {
+    public void removeShop(String world, double x, double y, double z) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("DELETE FROM zoriontp_db WHERE ? IN world AND ? IN x AND ? IN y AND ? IN z;");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("DELETE FROM chestshop_db WHERE ? IN (world) AND ? IN (x) AND ? IN (y) AND ? IN (z);");
             preparedStatement.setString(1, world);
             preparedStatement.setDouble(2, x);
             preparedStatement.setDouble(3, y);

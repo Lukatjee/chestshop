@@ -179,20 +179,11 @@ public class createShop implements Listener {
 
                                         String db_containerType;
                                         String db_item = itemStack.getType().toString().toLowerCase();
+                                        String db_container = null;
 
                                         if (wildChestBoolean) {
 
                                             db_containerType = "wildchest";
-
-                                        } else {
-
-                                            db_containerType = "vanilla";
-
-                                        }
-
-                                        String db_container = null;
-
-                                        if (wildChestBoolean) {
 
                                             if (wildChestType == ChestType.STORAGE_UNIT) {
 
@@ -210,6 +201,7 @@ public class createShop implements Listener {
 
                                         } else {
 
+                                            db_containerType = "vanilla";
                                             int chestSize = vanillaChest.getInventory().getSize();
 
                                             if (chestSize == 27) {
