@@ -132,6 +132,11 @@ public class createShop implements Listener {
 
                                 if (dataSecondLine.length == 2) {
 
+                                    double shopPrice = -1;
+                                    int shopAmount = 0;
+                                    double maximumPrice = configuration.getDouble("maxPrice");
+                                    int maximumAmount = configuration.getInt("maxAmount");
+
                                     /*
                                      *
                                      *  Once it's been confirmed that all required arguments have been given (and nothing
@@ -139,9 +144,6 @@ public class createShop implements Listener {
                                      *  that it'll check what to do regarding different chest types.
                                      *
                                      */
-
-                                    double shopPrice = -1;
-                                    int shopAmount = 0;
 
                                     try {
 
@@ -155,17 +157,7 @@ public class createShop implements Listener {
 
                                     } catch (NumberFormatException ignored) { }
 
-                                    double maximumPrice = configuration.getDouble("maxPrice");
-                                    int maximumAmount = configuration.getInt("maxAmount");
-
                                     if ((shopPrice > -1 && shopAmount > 0) && (shopPrice <= maximumPrice && shopAmount <= maximumAmount)) {
-
-                                        /*
-                                         *
-                                         *  Finally, once everything has been checked to be valid, the plugin gathers everything
-                                         *  it needs to store in the database and stores it if the chestshop does not exist yet.
-                                         *
-                                         */
 
                                         String db_playerUUID = player.getUniqueId().toString();
                                         String db_shopType = null;
@@ -180,6 +172,14 @@ public class createShop implements Listener {
                                         double db_price = shopPrice;
                                         int db_amount = shopAmount;
                                         String db_itemType = "vanilla";
+                                        boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
+
+                                        /*
+                                         *
+                                         *  Finally, once everything has been checked to be valid, the plugin gathers everything
+                                         *  it needs to store in the database and stores it if the chestshop does not exist yet.
+                                         *
+                                         */
 
                                         if (signObjectData[0].equals(createSellId)) {
 
@@ -225,8 +225,6 @@ public class createShop implements Listener {
                                             }
 
                                         }
-
-                                        boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
 
                                         if (!shopExists) {
 
