@@ -65,9 +65,12 @@ maxAmount: 64
 # by permission plugins yet.
 
 reloadPermission: "chestshop.admin.reload"
+adminDeletePermission: "chestshop.admin.delete"
 
 createBuyPermission: "chestshop.create.buy"
 createSellPermission: "chestshop.create.sell"
+
+deletePermission: "chestshop.delete"
 
 # -------------------------------- #
 #                                  #
@@ -84,7 +87,10 @@ invalidArguments: "&8&l[&c&li&8&l]&7 It seems like the (amount of) given argumen
 
 shopCreated: "&8&l[&c&li&8&l]&7 Successfully created a new chestshop."
 shopExists: "&8&l[&c&li&8&l]&7 This chest is already a chestshop."
-invalidContainer: "&8&l[&c&li&8&l]&7 Sorry, but this block is not a valid container."
+
+shopRemoved: "&8&l[&c&li&8&l]&7 Successfully removed this chestshop."
+shopOwnership: "&8&l[&c&li&8&l]&7 Sorry, but only shop owners or administrators can do this."
+
 invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid item."
 invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
 invalidPrice: "&8&l[&c&li&8&l]&7 Sorry, but the price you entered is invalid or too high."

@@ -97,6 +97,16 @@ public class sqlGetter {
         return false;
     }
 
+    UUID playerUUID;
+    String shopType;
+    String containerType;
+    String container;
+    double price;
+    int amount;
+    String itemType;
+    String item;
+    Location location;
+
     public void readShop(String world, int x, int y, int z) {
 
         PreparedStatement preparedStatement;
@@ -113,21 +123,21 @@ public class sqlGetter {
 
             if (result != null && result.next()) {
 
-                UUID playerUUID = UUID.fromString(result.getString("playerUUID"));
-                String shopType = result.getString("shopType");
-                String containerType = result.getString("containerType");
-                String container = result.getString("container");
-                double price = result.getDouble("price");
-                int amount = result.getInt("amount");
-                String itemType = result.getString("itemType");
-                String item = result.getString("item");
+                playerUUID = UUID.fromString(result.getString("playerUUID"));
+                shopType = result.getString("shopType");
+                containerType = result.getString("containerType");
+                container = result.getString("container");
+                price = result.getDouble("price");
+                amount = result.getInt("amount");
+                itemType = result.getString("itemType");
+                item = result.getString("item");
 
                 World worldResult = Bukkit.getServer().getWorld(result.getString("world"));
                 double xResult = result.getDouble("x");
                 double yResult = result.getDouble("y");
                 double zResult = result.getDouble("z");
 
-                Location location = new Location(worldResult, xResult, yResult, zResult);
+                location = new Location(worldResult, xResult, yResult, zResult);
 
             }
 
@@ -136,6 +146,60 @@ public class sqlGetter {
             exception.printStackTrace();
 
         }
+
+    }
+
+    public UUID getPlayerUUID() {
+
+        return playerUUID;
+
+    }
+
+    public String getShopType() {
+
+        return shopType;
+
+    }
+
+    public String getContainerType() {
+
+        return containerType;
+
+    }
+
+    public String getContainer() {
+
+        return container;
+
+    }
+
+    public double getPrice() {
+
+        return price;
+
+    }
+
+    public int getAmount() {
+
+        return amount;
+
+    }
+
+    public String getItemType() {
+
+        return itemType;
+
+    }
+
+    public String getItem() {
+
+        return item;
+
+    }
+
+    public Location getLocation() {
+
+        return location;
 
     }
 

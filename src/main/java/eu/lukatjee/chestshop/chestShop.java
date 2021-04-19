@@ -2,8 +2,9 @@ package eu.lukatjee.chestshop;
 
 import eu.lukatjee.chestshop.commands.mainCommand;
 import eu.lukatjee.chestshop.events.createShop;
-import eu.lukatjee.chestshop.sql.sqlMain;
+import eu.lukatjee.chestshop.events.deleteShop;
 import eu.lukatjee.chestshop.sql.sqlGetter;
+import eu.lukatjee.chestshop.sql.sqlMain;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -62,6 +63,7 @@ public final class chestShop extends JavaPlugin {
          */
 
         getServer().getPluginManager().registerEvents(new createShop(), this);
+        getServer().getPluginManager().registerEvents(new deleteShop(), this);
 
         /*
 
