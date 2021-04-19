@@ -81,7 +81,7 @@ public class createShop implements Listener {
 
                         String[] signObjectData = event.getLines();
 
-                        if ((signObjectData.length >= 2) && (signObjectData[0].equals(createSellId) || signObjectData[0].equals(createBuyId))) {
+                        if ((signObjectData[0].equals(createSellId) || signObjectData[0].equals(createBuyId)) && (signObjectData.length >= 2)) {
 
                             /*
                              *
@@ -90,8 +90,10 @@ public class createShop implements Listener {
                              *
                              */
 
-                            boolean wildChestBoolean = false; ChestType wildChestType = null; ItemStack itemStack = null;
                             com.bgsoftware.wildchests.api.objects.chests.Chest wildChest = WildChestsAPI.getChest(attachedObject.getLocation());
+                            boolean wildChestBoolean = false;
+                            ChestType wildChestType = null;
+                            ItemStack itemStack = null;
                             Chest vanillaChest = null;
 
                             try {
@@ -167,6 +169,17 @@ public class createShop implements Listener {
 
                                         String db_playerUUID = player.getUniqueId().toString();
                                         String db_shopType = null;
+                                        String db_containerType;
+                                        String db_item = itemStack.getType().toString().toLowerCase();
+                                        String db_container = null;
+                                        Location location = attachedObject.getLocation();
+                                        String db_world = player.getWorld().getName();
+                                        int db_x = location.getBlockX();
+                                        int db_y = location.getBlockY();
+                                        int db_z = location.getBlockZ();
+                                        double db_price = shopPrice;
+                                        int db_amount = shopAmount;
+                                        String db_itemType = "vanilla";
 
                                         if (signObjectData[0].equals(createSellId)) {
 
@@ -177,10 +190,6 @@ public class createShop implements Listener {
                                             db_shopType = "buy";
 
                                         }
-
-                                        String db_containerType;
-                                        String db_item = itemStack.getType().toString().toLowerCase();
-                                        String db_container = null;
 
                                         if (wildChestBoolean) {
 
@@ -217,14 +226,6 @@ public class createShop implements Listener {
 
                                         }
 
-                                        Location location = attachedObject.getLocation();
-
-                                        String db_world = player.getWorld().getName();
-                                        int db_x = location.getBlockX(); int db_y = location.getBlockY(); int db_z = location.getBlockZ();
-
-                                        double db_price = shopPrice; int db_amount = shopAmount;
-
-                                        String db_itemType = "vanilla";
                                         boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
 
                                         if (!shopExists) {
