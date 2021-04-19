@@ -73,7 +73,6 @@ public class deleteShop implements Listener {
 
                             getter.readShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
                             UUID db_playerUUID = getter.getPlayerUUID();
-                            player.sendMessage(String.valueOf(db_playerUUID));
 
                             if (db_playerUUID.equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
 
