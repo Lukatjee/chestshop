@@ -113,171 +113,167 @@ public class createShop implements Listener {
 
                                 }
 
-                                if (itemStack != null) {
+                                if (itemStack == null) {
 
-                                    String[] dataSecondLine = signObjectData[1].split(" ");
+                                    player.sendMessage(invalidItemMessage);
+                                    return;
 
-                                    if (dataSecondLine.length == 2) {
+                                }
 
-                                        double shopPrice = -1;
-                                        int shopAmount = 0;
-                                        double maximumPrice = configuration.getDouble("maxPrice");
-                                        int maximumAmount = configuration.getInt("maxAmount");
+                                String[] dataSecondLine = signObjectData[1].split(" ");
+
+                                if (dataSecondLine.length == 2) {
+
+                                    double shopPrice = -1;
+                                    int shopAmount = 0;
+                                    double maximumPrice = configuration.getDouble("maxPrice");
+                                    int maximumAmount = configuration.getInt("maxAmount");
+
+                                    /*
+                                     *
+                                     *  Once it's been confirmed that all required arguments have been given (and nothing
+                                     *  more), the plugin will continue to gather the data and check if it's valid. After
+                                     *  that it'll check what to do regarding different chest types.
+                                     *
+                                     */
+
+                                    try {
+
+                                        shopPrice = Double.parseDouble(dataSecondLine[0]);
+                                        shopAmount = Integer.parseInt(dataSecondLine[1]);
+
+                                    } catch (NumberFormatException exception) {
+
+                                        // Pyro tells you to get over it
+
+                                    }
+
+                                    if ((shopPrice > -1 && shopAmount > 0) && (shopPrice <= maximumPrice && shopAmount <= maximumAmount)) {
+
+                                        String db_playerUUID = player.getUniqueId().toString();
+                                        String db_shopType = null;
+                                        String db_containerType;
+                                        String db_item = itemStack.getType().toString().toLowerCase();
+                                        String db_container = null;
+                                        Location location = chestObject.getLocation();
+                                        String db_world = player.getWorld().getName();
+                                        int db_x = location.getBlockX();
+                                        int db_y = location.getBlockY();
+                                        int db_z = location.getBlockZ();
+                                        double db_price = shopPrice;
+                                        int db_amount = shopAmount;
+                                        String db_itemType = "vanilla";
+                                        boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
 
                                         /*
                                          *
-                                         *  Once it's been confirmed that all required arguments have been given (and nothing
-                                         *  more), the plugin will continue to gather the data and check if it's valid. After
-                                         *  that it'll check what to do regarding different chest types.
+                                         *  Finally, once everything has been checked to be valid, the plugin gathers everything
+                                         *  it needs to store in the database and stores it if the chestshop does not exist yet.
                                          *
                                          */
 
-                                        try {
+                                        if (signObjectData[0].equals(createSellId)) {
 
-                                            shopPrice = Double.parseDouble(dataSecondLine[0]);
+                                            db_shopType = "sell";
 
-                                        } catch (NumberFormatException ignored) {
-                                        }
+                                        } else if (signObjectData[0].equals(createBuyId)) {
 
-                                        try {
-
-                                            shopAmount = Integer.parseInt(dataSecondLine[1]);
-
-                                        } catch (NumberFormatException ignored) {
-                                        }
-
-                                        if ((shopPrice > -1 && shopAmount > 0) && (shopPrice <= maximumPrice && shopAmount <= maximumAmount)) {
-
-                                            String db_playerUUID = player.getUniqueId().toString();
-                                            String db_shopType = null;
-                                            String db_containerType;
-                                            String db_item = itemStack.getType().toString().toLowerCase();
-                                            String db_container = null;
-                                            Location location = chestObject.getLocation();
-                                            String db_world = player.getWorld().getName();
-                                            int db_x = location.getBlockX();
-                                            int db_y = location.getBlockY();
-                                            int db_z = location.getBlockZ();
-                                            double db_price = shopPrice;
-                                            int db_amount = shopAmount;
-                                            String db_itemType = "vanilla";
-                                            boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
-
-                                            /*
-                                             *
-                                             *  Finally, once everything has been checked to be valid, the plugin gathers everything
-                                             *  it needs to store in the database and stores it if the chestshop does not exist yet.
-                                             *
-                                             */
-
-                                            if (signObjectData[0].equals(createSellId)) {
-
-                                                db_shopType = "sell";
-
-                                            } else if (signObjectData[0].equals(createBuyId)) {
-
-                                                db_shopType = "buy";
-
-                                            }
-
-                                            if (wildChestBoolean) {
-
-                                                db_containerType = "wildchest";
-
-                                                if (wildChestType == ChestType.STORAGE_UNIT) {
-
-                                                    db_container = "storage_chest";
-
-                                                } else if (wildChestType == ChestType.LINKED_CHEST) {
-
-                                                    db_container = "linked_chest";
-
-                                                } else if (wildChestType == ChestType.CHEST) {
-
-                                                    db_container = "large_chest";
-
-                                                }
-
-                                            } else {
-
-                                                db_containerType = "vanilla";
-                                                int chestSize = vanillaChest.getInventory().getSize();
-
-                                                if (chestSize == 27) {
-
-                                                    db_container = "single_chest";
-
-                                                } else if (chestSize == 54) {
-
-                                                    db_container = "double_chest";
-
-                                                }
-
-                                            }
-
-                                            if (!shopExists) {
-
-                                                getter.createShop(
-
-                                                        db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
-
-                                                );
-
-                                                signFormat signFormat = new signFormat();
-                                                signFormat.signFormat(db_shopType, db_price, event.getPlayer());
-
-                                                String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
-
-                                                event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
-                                                event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
-                                                event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
-                                                event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
-
-                                                player.sendMessage(shopCreatedMessage);
-
-                                            } else {
-
-                                                player.sendMessage(shopExistsMessage);
-
-                                            }
-
-                                        } else if ((shopPrice > maximumPrice) || (shopPrice <= -1)) {
-
-                                            player.sendMessage(invalidPriceMessage);
-
-                                        } else if ((shopAmount > maximumAmount) || (shopAmount <= 0)) {
-
-                                            player.sendMessage(invalidAmountMessage);
+                                            db_shopType = "buy";
 
                                         }
 
-                                    } else {
+                                        if (wildChestBoolean) {
 
-                                        player.sendMessage(invalidArgumentsMessage);
+                                            db_containerType = "wildchest";
+
+                                            if (wildChestType == ChestType.STORAGE_UNIT) {
+
+                                                db_container = "storage_chest";
+
+                                            } else if (wildChestType == ChestType.LINKED_CHEST) {
+
+                                                db_container = "linked_chest";
+
+                                            } else if (wildChestType == ChestType.CHEST) {
+
+                                                db_container = "large_chest";
+
+                                            }
+
+                                        } else {
+
+                                            db_containerType = "vanilla";
+                                            int chestSize = vanillaChest.getInventory().getSize();
+
+                                            if (chestSize == 27) {
+
+                                                db_container = "single_chest";
+
+                                            } else if (chestSize == 54) {
+
+                                                db_container = "double_chest";
+
+                                            }
+
+                                        }
+
+                                        if (!shopExists) {
+
+                                            getter.createShop(
+
+                                                    db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
+
+                                            );
+
+                                            signFormat signFormat = new signFormat();
+                                            signFormat.signFormat(db_shopType, db_price, event.getPlayer());
+
+                                            String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
+
+                                            event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
+                                            event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
+                                            event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
+                                            event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
+
+                                            player.sendMessage(shopCreatedMessage);
+
+                                        } else {
+
+                                            player.sendMessage(shopExistsMessage);
+
+                                        }
+
+                                    } else if ((shopPrice > maximumPrice) || (shopPrice <= -1)) {
+
+                                        player.sendMessage(invalidPriceMessage);
+
+                                    } else if ((shopAmount > maximumAmount) || (shopAmount <= 0)) {
+
+                                        player.sendMessage(invalidAmountMessage);
 
                                     }
 
                                 } else {
 
-                                    player.sendMessage(invalidItemMessage);
+                                    player.sendMessage(invalidArgumentsMessage);
 
                                 }
 
-                            } else {
-
-                                player.sendMessage(invalidArgumentsMessage);
-
                             }
+
+                        } else {
+
+                            player.sendMessage(invalidArgumentsMessage);
 
                         }
 
                     }
 
-                } else {
-
-                    player.sendMessage(noPermissionMessage);
-
                 }
+
+            } else {
+
+                player.sendMessage(noPermissionMessage);
 
             }
 
