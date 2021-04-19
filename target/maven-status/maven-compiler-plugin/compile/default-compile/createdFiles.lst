@@ -1,4 +1,5 @@
 eu\lukatjee\chestshop\utils\currencyConversion.class
+eu\lukatjee\chestshop\utils\signFormat.class
 eu\lukatjee\chestshop\events\deleteShop.class
 eu\lukatjee\chestshop\commandHandlers\helpHandler.class
 eu\lukatjee\chestshop\commandHandlers\reloadHandler.class

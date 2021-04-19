@@ -30,9 +30,6 @@ arguments: "?useSSL=false&allowPublicKeyRetrieval=true"
 createBuy: "[buy]"
 createSell: "[sell]"
 
-buy: "Sell"
-sell: "Buy"
-
 # -------------------------------- #
 #                                  #
 #            Formatting            #

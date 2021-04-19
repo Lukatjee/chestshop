@@ -5,6 +5,7 @@ import com.bgsoftware.wildchests.api.objects.ChestType;
 import com.bgsoftware.wildchests.api.objects.chests.StorageChest;
 import eu.lukatjee.chestshop.chestShop;
 import eu.lukatjee.chestshop.sql.sqlGetter;
+import eu.lukatjee.chestshop.utils.signFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -233,6 +234,16 @@ public class createShop implements Listener {
                                                     db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
 
                                             );
+
+                                            signFormat signFormat = new signFormat();
+                                            signFormat.signFormat(db_shopType, db_price, event.getPlayer());
+
+                                            String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
+
+                                            event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
+                                            event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
+                                            event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
+                                            event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
 
                                             player.sendMessage(shopCreatedMessage);
 
