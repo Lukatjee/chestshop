@@ -1,7 +1,5 @@
 package eu.lukatjee.chestshop.utils;
 
-import eu.lukatjee.chestshop.chestShop;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
@@ -9,8 +7,6 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class signFormat {
-
-    FileConfiguration configuration = chestShop.plugin.getConfig();
 
     String signShopType;
     String signPrice;

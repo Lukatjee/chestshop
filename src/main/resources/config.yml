@@ -95,4 +95,6 @@ invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid it
 invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
 invalidPrice: "&8&l[&c&li&8&l]&7 Sorry, but the price you entered is invalid or too high."
 
+noHopper: "&8&l[&c&li&8&l]&7 Sorry, but you can't place a hopper below a chestshop."
+
 reloadMessage: "&8&l[&c&li&8&l]&7 Successfully reloaded the chat configuration."

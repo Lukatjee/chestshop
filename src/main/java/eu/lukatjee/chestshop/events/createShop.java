@@ -49,8 +49,8 @@ public class createShop implements Listener {
 
                 /*
                  *
-                 *  Get the sign object and the object it is attached to, if the attached object
-                 *  is a chest the plugin will continue the process to create a shop.
+                 *  First I'll check if the sign is a wall sign, after that I'll check
+                 *  if the block it's attached to equals the chest material type.
                  *
                  */
 
@@ -72,8 +72,8 @@ public class createShop implements Listener {
 
                                 /*
                                  *
-                                 *  Once everything has been checked, the code will continue to gather info on
-                                 *  the chest the sign is attached to.
+                                 *  This plugin will check what kind of chest we're dealing
+                                 *  with as this plugin offers compatibility for wildchests.
                                  *
                                  */
 
@@ -122,20 +122,19 @@ public class createShop implements Listener {
 
                                 String[] dataSecondLine = signObjectData[1].split(" ");
 
+                                /*
+                                 *
+                                 *  First, the plugin will check if the given arguments are correct to proceed
+                                 *  gathering and entering data in the database if the shop does not exist yet.
+                                 *
+                                 */
+
                                 if (dataSecondLine.length == 2) {
 
                                     double shopPrice = -1;
                                     int shopAmount = 0;
                                     double maximumPrice = configuration.getDouble("maxPrice");
                                     int maximumAmount = configuration.getInt("maxAmount");
-
-                                    /*
-                                     *
-                                     *  Once it's been confirmed that all required arguments have been given (and nothing
-                                     *  more), the plugin will continue to gather the data and check if it's valid. After
-                                     *  that it'll check what to do regarding different chest types.
-                                     *
-                                     */
 
                                     try {
 
@@ -165,13 +164,6 @@ public class createShop implements Listener {
                                         String db_itemType = "vanilla";
                                         boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
 
-                                        /*
-                                         *
-                                         *  Finally, once everything has been checked to be valid, the plugin gathers everything
-                                         *  it needs to store in the database and stores it if the chestshop does not exist yet.
-                                         *
-                                         */
-
                                         if (signObjectData[0].equals(createSellId)) {
 
                                             db_shopType = "sell";
@@ -186,17 +178,21 @@ public class createShop implements Listener {
 
                                             db_containerType = "wildchest";
 
-                                            if (wildChestType == ChestType.STORAGE_UNIT) {
+                                            switch (wildChestType) {
 
-                                                db_container = "storage_chest";
+                                                case STORAGE_UNIT:
 
-                                            } else if (wildChestType == ChestType.LINKED_CHEST) {
+                                                    db_container = "storage_chest";
+                                                    break;
 
-                                                db_container = "linked_chest";
+                                                case LINKED_CHEST:
 
-                                            } else if (wildChestType == ChestType.CHEST) {
+                                                    db_container = "linked_chest";
+                                                    break;
 
-                                                db_container = "large_chest";
+                                                case CHEST:
+
+                                                    db_container = "large_chest";
 
                                             }
 
@@ -205,43 +201,45 @@ public class createShop implements Listener {
                                             db_containerType = "vanilla";
                                             int chestSize = vanillaChest.getInventory().getSize();
 
-                                            if (chestSize == 27) {
+                                            switch (chestSize) {
 
-                                                db_container = "single_chest";
+                                                case 27:
 
-                                            } else if (chestSize == 54) {
+                                                    db_container = "single_chest";
+                                                    break;
 
-                                                db_container = "double_chest";
+                                                case 54:
+
+                                                    db_container = "double_chest";
 
                                             }
 
                                         }
 
-                                        if (!shopExists) {
-
-                                            getter.createShop(
-
-                                                    db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
-
-                                            );
-
-                                            signFormat signFormat = new signFormat();
-                                            signFormat.signFormat(db_shopType, db_price, event.getPlayer());
-
-                                            String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
-
-                                            event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
-                                            event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
-                                            event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
-                                            event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
-
-                                            player.sendMessage(shopCreatedMessage);
-
-                                        } else {
+                                        if (shopExists) {
 
                                             player.sendMessage(shopExistsMessage);
+                                            return;
 
                                         }
+
+                                        getter.createShop(
+
+                                                db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
+
+                                        );
+
+                                        signFormat signFormat = new signFormat();
+                                        signFormat.signFormat(db_shopType, db_price, event.getPlayer());
+
+                                        String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
+
+                                        event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
+                                        event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
+                                        event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
+                                        event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
+
+                                        player.sendMessage(shopCreatedMessage);
 
                                     } else if ((shopPrice > maximumPrice) || (shopPrice <= -1)) {
 
@@ -259,11 +257,11 @@ public class createShop implements Listener {
 
                                 }
 
+                            } else {
+
+                                player.sendMessage(invalidArgumentsMessage);
+
                             }
-
-                        } else {
-
-                            player.sendMessage(invalidArgumentsMessage);
 
                         }
 

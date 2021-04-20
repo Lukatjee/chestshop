@@ -34,8 +34,8 @@ public class deleteShop implements Listener {
 
         /*
          *
-         *  Get the sign object and the object it is attached to, if the attached object
-         *  is a chest the plugin will continue the process to create a shop.
+         *  First I'll check if the sign is a wall sign, after that I'll check
+         *  if the block it's attached to equals the chest material type.
          *
          */
 
@@ -51,9 +51,8 @@ public class deleteShop implements Listener {
 
                     /*
                      *
-                     *  Once everything has been checked, the code will continue to gather info on
-                     *  the block and check if it's a chestshop so it can be removed if the player
-                     *  is allowed to do so.
+                     *  Plugin will gather info necessary to check if the shop already exists
+                     *  If so, it'll continue to check if the player is allowed to remove the shop.
                      *
                      */
 
@@ -67,31 +66,33 @@ public class deleteShop implements Listener {
 
                     boolean isChestShop = getter.checkShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
 
-                    if (isChestShop) {
+                    if (!isChestShop) {
 
-                        if (player.hasPermission(deletePermission)) {
+                        return;
 
-                            getter.readShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
-                            UUID db_playerUUID = getter.getPlayerUUID();
+                    }
 
-                            if (db_playerUUID.equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
+                    if (player.hasPermission(deletePermission)) {
 
-                                getter.removeShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
-                                player.sendMessage(shopRemovedMessage);
+                        getter.readShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
+                        UUID db_playerUUID = getter.getPlayerUUID();
 
-                            } else {
+                        if (db_playerUUID.equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
 
-                                player.sendMessage(shopOwnershipMessage);
-                                event.setCancelled(true);
-
-                            }
+                            getter.removeShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
+                            player.sendMessage(shopRemovedMessage);
 
                         } else {
 
-                            player.sendMessage(noPermissionMessage);
+                            player.sendMessage(shopOwnershipMessage);
                             event.setCancelled(true);
 
                         }
+
+                    } else {
+
+                        player.sendMessage(noPermissionMessage);
+                        event.setCancelled(true);
 
                     }
 
