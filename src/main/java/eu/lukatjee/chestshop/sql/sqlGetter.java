@@ -26,7 +26,7 @@ public class sqlGetter {
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS chestshop_db (playerUUID VARCHAR(255), shopType VARCHAR(255), containerType VARCHAR(255), container VARCHAR(255), world VARCHAR(255), x INT(65), y INT(65), z INT(65), price DECIMAL(65,25), amount INT(65), itemType VARCHAR(255), item VARCHAR(255));");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS chestshop_db (playerUUID VARCHAR(255), shopType VARCHAR(255), containerType VARCHAR(255), container VARCHAR(255), world VARCHAR(255), chestX INT(65), chestY INT(65), chestZ INT(65), signX INT(65), signY INT(65), signZ INT(65), price DECIMAL(65,25), amount INT(65), itemType VARCHAR(255), item VARCHAR(255));");
             preparedStatement.executeUpdate();
 
         } catch (SQLException exception) {
@@ -37,25 +37,28 @@ public class sqlGetter {
 
     }
 
-    public void createShop(String playerUUID, String shopType, String containerType, String container, String world, int x, int y, int z, double price, int amount, String itemType, String item) {
+    public void createShop(String playerUUID, String shopType, String containerType, String container, String world, int chestX, int chestY, int chestZ, int signX, int signY, int signZ, double price, int amount, String itemType, String item) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("INSERT INTO chestshop_db (playerUUID, shopType, containerType, container, world, x, y, z, price, amount, itemType, item) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("INSERT INTO chestshop_db (playerUUID, shopType, containerType, container, world, chestX, chestY, chestZ, signX, signY, signZ, price, amount, itemType, item) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
             preparedStatement.setString(1, playerUUID);
             preparedStatement.setString(2, shopType);
             preparedStatement.setString(3, containerType);
             preparedStatement.setString(4, container);
             preparedStatement.setString(5, world);
-            preparedStatement.setInt(6, x);
-            preparedStatement.setInt(7, y);
-            preparedStatement.setInt(8, z);
-            preparedStatement.setDouble(9, price);
-            preparedStatement.setInt(10, amount);
-            preparedStatement.setString(11, itemType);
-            preparedStatement.setString(12, item);
+            preparedStatement.setInt(6, chestX);
+            preparedStatement.setInt(7, chestY);
+            preparedStatement.setInt(8, chestZ);
+            preparedStatement.setInt(9, signX);
+            preparedStatement.setInt(10, signY);
+            preparedStatement.setInt(11, signZ);
+            preparedStatement.setDouble(12, price);
+            preparedStatement.setInt(13, amount);
+            preparedStatement.setString(14, itemType);
+            preparedStatement.setString(15, item);
 
             preparedStatement.execute();
 
@@ -68,17 +71,46 @@ public class sqlGetter {
 
     }
 
-    public boolean checkShop(String world, int x, int y, int z) {
+    public boolean checkShop_sign(String world, int signX, int signY, int signZ) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (x) AND ? IN (y) AND ? IN (z);");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (signX) AND ? IN (signY) AND ? IN (signZ);");
             preparedStatement.setString(1, world);
-            preparedStatement.setInt(2, x);
-            preparedStatement.setInt(3, y);
-            preparedStatement.setInt(4, z);
+            preparedStatement.setInt(2, signX);
+            preparedStatement.setInt(3, signY);
+            preparedStatement.setInt(4, signZ);
+
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result != null && result.next()) {
+
+                return true;
+
+            }
+
+        } catch (SQLException exception) {
+
+            exception.printStackTrace();
+
+        }
+
+        return false;
+    }
+
+    public boolean checkShop_chest(String world, int chestX, int chestY, int chestZ) {
+
+        PreparedStatement preparedStatement;
+
+        try {
+
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (chestX) AND ? IN (chestY) AND ? IN (chestZ);");
+            preparedStatement.setString(1, world);
+            preparedStatement.setInt(2, chestX);
+            preparedStatement.setInt(3, chestY);
+            preparedStatement.setInt(4, chestZ);
 
             ResultSet result = preparedStatement.executeQuery();
 
@@ -105,19 +137,20 @@ public class sqlGetter {
     int amount;
     String itemType;
     String item;
-    Location location;
+    Location signLocation;
+    Location chestLocation;
 
-    public void readShop(String world, int x, int y, int z) {
+    public void readShop_sign(String world, int signX, int signY, int signZ) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (x) AND ? IN (y) AND ? IN (z);");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (signX) AND ? IN (signY) AND ? IN (signZ);");
             preparedStatement.setString(1, world);
-            preparedStatement.setInt(2, x);
-            preparedStatement.setInt(3, y);
-            preparedStatement.setInt(4, z);
+            preparedStatement.setInt(2, signX);
+            preparedStatement.setInt(3, signY);
+            preparedStatement.setInt(4, signZ);
 
             ResultSet result = preparedStatement.executeQuery();
 
@@ -133,11 +166,63 @@ public class sqlGetter {
                 item = result.getString("item");
 
                 World worldResult = Bukkit.getServer().getWorld(result.getString("world"));
-                double xResult = result.getDouble("x");
-                double yResult = result.getDouble("y");
-                double zResult = result.getDouble("z");
+                int chestX_result = result.getInt("chestX");
+                int chestY_result = result.getInt("chestY");
+                int chestZ_result = result.getInt("chestZ");
 
-                location = new Location(worldResult, xResult, yResult, zResult);
+                int signX_result = result.getInt("signX");
+                int signY_result = result.getInt("signY");
+                int signZ_result = result.getInt("signZ");
+
+                signLocation = new Location(worldResult, signX_result, signY_result, signZ_result);
+                chestLocation = new Location(worldResult, chestX_result, chestY_result, chestZ_result);
+
+            }
+
+        } catch (SQLException exception) {
+
+            exception.printStackTrace();
+
+        }
+
+    }
+
+    public void readShop_chest(String world, int chestX, int chestY, int chestZ) {
+
+        PreparedStatement preparedStatement;
+
+        try {
+
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM chestshop_db WHERE ? IN (world) AND ? IN (chestX) AND ? IN (chestY) AND ? IN (chestZ);");
+            preparedStatement.setString(1, world);
+            preparedStatement.setInt(2, chestX);
+            preparedStatement.setInt(3, chestY);
+            preparedStatement.setInt(4, chestZ);
+
+            ResultSet result = preparedStatement.executeQuery();
+
+            if (result != null && result.next()) {
+
+                playerUUID = UUID.fromString(result.getString("playerUUID"));
+                shopType = result.getString("shopType");
+                containerType = result.getString("containerType");
+                container = result.getString("container");
+                price = result.getDouble("price");
+                amount = result.getInt("amount");
+                itemType = result.getString("itemType");
+                item = result.getString("item");
+
+                World worldResult = Bukkit.getServer().getWorld(result.getString("world"));
+                int chestX_result = result.getInt("chestX");
+                int chestY_result = result.getInt("chestY");
+                int chestZ_result = result.getInt("chestZ");
+
+                int signX_result = result.getInt("signX");
+                int signY_result = result.getInt("signY");
+                int signZ_result = result.getInt("signZ");
+
+                signLocation = new Location(worldResult, signX_result, signY_result, signZ_result);
+                chestLocation = new Location(worldResult, chestX_result, chestY_result, chestZ_result);
 
             }
 
@@ -197,23 +282,29 @@ public class sqlGetter {
 
     }
 
-    public Location getLocation() {
+    public Location getSignLocation() {
 
-        return location;
+        return signLocation;
 
     }
 
-    public void removeShop(String world, double x, double y, double z) {
+    public Location getChestLocation() {
+
+        return chestLocation;
+
+    }
+
+    public void removeShop(String world, double signX, double signY, double signZ) {
 
         PreparedStatement preparedStatement;
 
         try {
 
-            preparedStatement = plugin.SQL.getConnection().prepareStatement("DELETE FROM chestshop_db WHERE ? IN (world) AND ? IN (x) AND ? IN (y) AND ? IN (z);");
+            preparedStatement = plugin.SQL.getConnection().prepareStatement("DELETE FROM chestshop_db WHERE ? IN (world) AND ? IN (signX) AND ? IN (signY) AND ? IN (signZ);");
             preparedStatement.setString(1, world);
-            preparedStatement.setDouble(2, x);
-            preparedStatement.setDouble(3, y);
-            preparedStatement.setDouble(4, z);
+            preparedStatement.setDouble(2, signX);
+            preparedStatement.setDouble(3, signY);
+            preparedStatement.setDouble(4, signZ);
 
             preparedStatement.executeUpdate();
 

@@ -1,6 +1,7 @@
 package eu.lukatjee.chestshop;
 
 import eu.lukatjee.chestshop.commands.mainCommand;
+import eu.lukatjee.chestshop.events.chestshopInteractions;
 import eu.lukatjee.chestshop.events.createShop;
 import eu.lukatjee.chestshop.events.deleteShop;
 import eu.lukatjee.chestshop.events.hopperPlacement;
@@ -66,6 +67,7 @@ public final class chestShop extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new createShop(), this);
         getServer().getPluginManager().registerEvents(new deleteShop(), this);
         getServer().getPluginManager().registerEvents(new hopperPlacement(), this);
+        getServer().getPluginManager().registerEvents(new chestshopInteractions(), this);
 
         /*
 

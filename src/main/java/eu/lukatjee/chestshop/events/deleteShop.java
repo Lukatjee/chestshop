@@ -13,8 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.UUID;
-
 public class deleteShop implements Listener {
 
     FileConfiguration configuration = chestShop.plugin.getConfig();
@@ -32,71 +30,61 @@ public class deleteShop implements Listener {
 
         sqlGetter getter = new sqlGetter(chestShop.plugin);
 
-        /*
-         *
-         *  First I'll check if the sign is a wall sign, after that I'll check
-         *  if the block it's attached to equals the chest material type.
-         *
-         */
-
         if (!event.isCancelled()) {
 
-            Block signObject = event.getBlock();
+            Block brokenBlock = event.getBlock();
+            String blockObject = null;
 
-            if (signObject.getBlockData() instanceof WallSign) {
+            Location location = brokenBlock.getLocation();
 
-                WallSign wallSign = (WallSign) signObject.getBlockData();
+            String locationWorldName = location.getWorld().getName();
+            int x = location.getBlockX();
+            int y = location.getBlockY();
+            int z = location.getBlockZ();
 
-                if (signObject.getRelative(wallSign.getFacing().getOppositeFace()).getType() == Material.CHEST) {
+            if (brokenBlock.getBlockData() instanceof WallSign) {
 
-                    /*
-                     *
-                     *  Plugin will gather info necessary to check if the shop already exists
-                     *  If so, it'll continue to check if the player is allowed to remove the shop.
-                     *
-                     */
+                boolean isChestShop = getter.checkShop_sign(locationWorldName, x, y, z);
+                if (isChestShop) { blockObject = "sign"; }
 
-                    Block chestObject = signObject.getRelative(wallSign.getFacing().getOppositeFace());
-                    Location chestObjectLocation = chestObject.getLocation();
+            } else if (brokenBlock.getType().equals(Material.CHEST)) {
 
-                    String chestObjectWorld = player.getWorld().getName();
-                    int chestObjectX = chestObjectLocation.getBlockX();
-                    int chestObjectY = chestObjectLocation.getBlockY();
-                    int chestObjectZ = chestObjectLocation.getBlockZ();
+                boolean isChestShop = getter.checkShop_chest(locationWorldName, x, y, z);
+                if (isChestShop) { blockObject = "chest"; }
 
-                    boolean isChestShop = getter.checkShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
+            }
 
-                    if (!isChestShop) {
+            if (!player.hasPermission(deletePermission)) {
 
-                        return;
+                player.sendMessage(noPermissionMessage);
+                return;
 
-                    }
+            }
 
-                    if (player.hasPermission(deletePermission)) {
+            if (blockObject == null) { return; }
+            switch (blockObject) {
 
-                        getter.readShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
-                        UUID db_playerUUID = getter.getPlayerUUID();
+                case "sign":
 
-                        if (db_playerUUID.equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
+                    getter.readShop_sign(locationWorldName, x, y, z);
+                    break;
 
-                            getter.removeShop(chestObjectWorld, chestObjectX, chestObjectY, chestObjectZ);
-                            player.sendMessage(shopRemovedMessage);
+                case "chest":
 
-                        } else {
+                    getter.readShop_chest(locationWorldName, x, y, z);
+                    break;
 
-                            player.sendMessage(shopOwnershipMessage);
-                            event.setCancelled(true);
+            }
 
-                        }
+            if (getter.getPlayerUUID().equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
 
-                    } else {
+                getter.removeShop(locationWorldName, x, y, z);
+                player.sendMessage(shopRemovedMessage);
 
-                        player.sendMessage(noPermissionMessage);
-                        event.setCancelled(true);
+            } else {
 
-                    }
-
-                }
+                player.sendMessage(shopOwnershipMessage);
+                event.setCancelled(true);
 
             }
 

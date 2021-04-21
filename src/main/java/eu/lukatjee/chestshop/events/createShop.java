@@ -154,15 +154,19 @@ public class createShop implements Listener {
                                         String db_containerType;
                                         String db_item = itemStack.getType().toString().toLowerCase();
                                         String db_container = null;
-                                        Location location = chestObject.getLocation();
+                                        Location containerLocation = chestObject.getLocation();
+                                        Location signLocation = signObject.getLocation();
                                         String db_world = player.getWorld().getName();
-                                        int db_x = location.getBlockX();
-                                        int db_y = location.getBlockY();
-                                        int db_z = location.getBlockZ();
+                                        int db_chestX = containerLocation.getBlockX();
+                                        int db_chestY = containerLocation.getBlockY();
+                                        int db_chestZ = containerLocation.getBlockZ();
+                                        int db_signX = signLocation.getBlockX();
+                                        int db_signY = signLocation.getBlockY();
+                                        int db_signZ = signLocation.getBlockZ();
                                         double db_price = shopPrice;
                                         int db_amount = shopAmount;
                                         String db_itemType = "vanilla";
-                                        boolean shopExists = getter.checkShop(db_world, db_x, db_y, db_z);
+                                        boolean shopExists = getter.checkShop_chest(db_world, db_chestX, db_chestY, db_chestZ);
 
                                         if (signObjectData[0].equals(createSellId)) {
 
@@ -225,7 +229,7 @@ public class createShop implements Listener {
 
                                         getter.createShop(
 
-                                                db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_x, db_y, db_z, db_price, db_amount, db_itemType, db_item
+                                                db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_chestX, db_chestY, db_chestZ, db_signX, db_signY, db_signZ, db_price, db_amount, db_itemType, db_item
 
                                         );
 

@@ -47,7 +47,7 @@ public class hopperPlacement implements Listener {
             if (blockOnTop.getType() == Material.CHEST) {
 
                 String worldName = world.getName();
-                boolean isChestShop = getter.checkShop(worldName, x, y, z);
+                boolean isChestShop = getter.checkShop_chest(worldName, x, y, z);
 
                 if (!isChestShop) {
 
