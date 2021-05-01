@@ -5,6 +5,7 @@ import com.bgsoftware.wildchests.api.objects.ChestType;
 import com.bgsoftware.wildchests.api.objects.chests.StorageChest;
 import eu.lukatjee.chestshop.chestShop;
 import eu.lukatjee.chestshop.sql.sqlGetter;
+import eu.lukatjee.chestshop.utils.messageGetter;
 import eu.lukatjee.chestshop.utils.signFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,261 +24,180 @@ import org.bukkit.inventory.ItemStack;
 public class createShop implements Listener {
 
     FileConfiguration configuration = chestShop.plugin.getConfig();
+    sqlGetter getter = new sqlGetter(chestShop.plugin);
+
+    messageGetter msgGetter = new messageGetter();
 
     @EventHandler
     public void create(SignChangeEvent event) {
 
+        msgGetter.message();
+
         Player player = event.getPlayer();
         String createPermission = configuration.getString("createSellPermission");
 
-        if (!event.isCancelled()) {
+        if (event.isCancelled()) { return; }
 
-            String noPermissionMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("noPermission"));
-            String invalidPriceMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidPrice"));
-            String invalidAmountMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidAmount"));
-            String invalidArgumentsMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidArguments"));
-            String invalidItemMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("invalidItem"));
-            String shopExistsMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("shopExists"));
-            String shopCreatedMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("shopCreated"));
+        if (!player.hasPermission(createPermission)) {
 
-            String createSellId = configuration.getString("createSell");
-            String createBuyId = configuration.getString("createBuy");
+            player.sendMessage(msgGetter.getNoPermissionMessage());
+            return;
 
-            sqlGetter getter = new sqlGetter(chestShop.plugin);
+        }
 
-            if (player.hasPermission(createPermission)) {
+        Block signObject = event.getBlock();
+        if (!(signObject.getBlockData() instanceof WallSign)) { return; }
 
-                /*
-                 *
-                 *  First I'll check if the sign is a wall sign, after that I'll check
-                 *  if the block it's attached to equals the chest material type.
-                 *
-                 */
+        String sellId = configuration.getString("createSell");
+        String buyId = configuration.getString("createBuy");
+        String[] signObjectData = event.getLines();
+        if (!(signObjectData[0].equals(sellId) || signObjectData[0].equals(buyId)) && !(signObjectData.length >= 2)) {
 
-                Block signObject = event.getBlock();
+            player.sendMessage(msgGetter.getInvalidArgumentsMessage());
+            return;
 
-                if (signObject.getBlockData() instanceof WallSign) {
+        }
 
-                    WallSign wallSign = (WallSign) signObject.getBlockData();
+        WallSign wallSign = (WallSign) signObject.getBlockData();
+        if (!(signObject.getRelative(wallSign.getFacing().getOppositeFace()).getType() == Material.CHEST)) { return; }
 
-                    if (signObject.getRelative(wallSign.getFacing().getOppositeFace()).getType() == Material.CHEST) {
+        Block chestObject = signObject.getRelative(wallSign.getFacing().getOppositeFace());
 
-                        String[] signObjectData = event.getLines();
+        com.bgsoftware.wildchests.api.objects.chests.Chest wildChest = WildChestsAPI.getChest(chestObject.getLocation());
+        Chest vanillaChest = (Chest) chestObject.getState();
 
-                        if (signObjectData[0].equals(createSellId) || signObjectData[0].equals(createBuyId)) {
+        ItemStack itemStack = null; boolean isWildChest = false;
 
-                            if (signObjectData.length >= 2) {
+        try {
 
-                                Block chestObject = signObject.getRelative(wallSign.getFacing().getOppositeFace());
+            ChestType tryChest = wildChest.getChestType();
+            if (tryChest != null) { isWildChest = true; }
 
-                                /*
-                                 *
-                                 *  This plugin will check what kind of chest we're dealing
-                                 *  with as this plugin offers compatibility for wildchests.
-                                 *
-                                 */
+        } catch (NullPointerException ignored) { }
 
-                                com.bgsoftware.wildchests.api.objects.chests.Chest wildChest = WildChestsAPI.getChest(chestObject.getLocation());
-                                boolean wildChestBoolean = false;
-                                ChestType wildChestType = null;
-                                ItemStack itemStack = null;
-                                Chest vanillaChest = null;
+        if (isWildChest && wildChest.getChestType() != ChestType.STORAGE_UNIT) {
 
-                                try {
+            if (wildChest.getItem(0).getType() != Material.AIR) { itemStack = wildChest.getItem(0); isWildChest = true;}
 
-                                    wildChestType = wildChest.getChestType();
-                                    wildChestBoolean = true;
+        } else if (isWildChest) {
 
-                                    if (wildChestType == ChestType.STORAGE_UNIT) {
+            if (((StorageChest) wildChest).getItemStack().getType() != Material.AIR) { itemStack = ((StorageChest) wildChest).getItemStack(); isWildChest = true;}
 
-                                        if (((StorageChest) wildChest).getItemStack().getType() != Material.AIR) {
+        } else {
 
-                                            itemStack = ((StorageChest) wildChest).getItemStack();
+            itemStack = vanillaChest.getInventory().getItem(0);
 
-                                        }
+        }
 
-                                    } else {
+        if (itemStack == null) {
+            player.sendMessage(msgGetter.getInvalidItemMessage());
+            return;
+        }
 
-                                        if (wildChest.getItem(0).getType() != Material.AIR) {
+        String[] dataSecondLine = signObjectData[1].split(" ");
+        if (!(dataSecondLine.length >= 2)) {
+            player.sendMessage(msgGetter.getInvalidArgumentsMessage());
+            return;
+        }
 
-                                            itemStack = wildChest.getItem(0);
+        double shopPrice = -1;
+        int shopAmount = 0;
+        double maximumPrice = configuration.getDouble("maxPrice");
+        int maximumAmount = configuration.getInt("maxAmount");
 
-                                        }
+        try {
 
-                                    }
+            shopPrice = Double.parseDouble(dataSecondLine[0]);
+            shopAmount = Integer.parseInt(dataSecondLine[1]);
 
-                                } catch (NullPointerException exception) {
+        } catch (NumberFormatException exception) {
 
-                                    vanillaChest = (Chest) chestObject.getState();
-                                    itemStack = vanillaChest.getInventory().getItem(0);
+            // Pyro tells you to get over it
 
-                                }
+        }
 
-                                if (itemStack == null) {
+        if ((shopPrice > -1 && shopAmount > 0) && (shopPrice <= maximumPrice && shopAmount <= maximumAmount)) {
 
-                                    player.sendMessage(invalidItemMessage);
-                                    return;
+            String db_playerUUID = player.getUniqueId().toString();
+            String db_shopType = null; String db_containerType; String db_container = null;
 
-                                }
+            Location containerLocation = chestObject.getLocation();
+            Location signLocation = signObject.getLocation(); String db_world = player.getWorld().getName();
+            int db_chestX = containerLocation.getBlockX(); int db_chestY = containerLocation.getBlockY(); int db_chestZ = containerLocation.getBlockZ();
+            int db_signX = signLocation.getBlockX(); int db_signY = signLocation.getBlockY(); int db_signZ = signLocation.getBlockZ();
 
-                                String[] dataSecondLine = signObjectData[1].split(" ");
+            double db_price = shopPrice; int db_amount = shopAmount;
+            String db_itemType = "vanilla"; String db_item = itemStack.getType().toString().toLowerCase();
 
-                                /*
-                                 *
-                                 *  First, the plugin will check if the given arguments are correct to proceed
-                                 *  gathering and entering data in the database if the shop does not exist yet.
-                                 *
-                                 */
+            boolean shopExists = getter.checkShop_chest(db_world, db_chestX, db_chestY, db_chestZ);
 
-                                if (dataSecondLine.length == 2) {
+            if (signObjectData[0].equals(sellId)) {
 
-                                    double shopPrice = -1;
-                                    int shopAmount = 0;
-                                    double maximumPrice = configuration.getDouble("maxPrice");
-                                    int maximumAmount = configuration.getInt("maxAmount");
+                db_shopType = "sell";
 
-                                    try {
+            } else if (signObjectData[0].equals(buyId)) {
 
-                                        shopPrice = Double.parseDouble(dataSecondLine[0]);
-                                        shopAmount = Integer.parseInt(dataSecondLine[1]);
+                db_shopType = "buy";
 
-                                    } catch (NumberFormatException exception) {
+            }
 
-                                        // Pyro tells you to get over it
+            if (isWildChest) {
 
-                                    }
-
-                                    if ((shopPrice > -1 && shopAmount > 0) && (shopPrice <= maximumPrice && shopAmount <= maximumAmount)) {
-
-                                        String db_playerUUID = player.getUniqueId().toString();
-                                        String db_shopType = null;
-                                        String db_containerType;
-                                        String db_item = itemStack.getType().toString().toLowerCase();
-                                        String db_container = null;
-                                        Location containerLocation = chestObject.getLocation();
-                                        Location signLocation = signObject.getLocation();
-                                        String db_world = player.getWorld().getName();
-                                        int db_chestX = containerLocation.getBlockX();
-                                        int db_chestY = containerLocation.getBlockY();
-                                        int db_chestZ = containerLocation.getBlockZ();
-                                        int db_signX = signLocation.getBlockX();
-                                        int db_signY = signLocation.getBlockY();
-                                        int db_signZ = signLocation.getBlockZ();
-                                        double db_price = shopPrice;
-                                        int db_amount = shopAmount;
-                                        String db_itemType = "vanilla";
-                                        boolean shopExists = getter.checkShop_chest(db_world, db_chestX, db_chestY, db_chestZ);
-
-                                        if (signObjectData[0].equals(createSellId)) {
-
-                                            db_shopType = "sell";
-
-                                        } else if (signObjectData[0].equals(createBuyId)) {
-
-                                            db_shopType = "buy";
-
-                                        }
-
-                                        if (wildChestBoolean) {
-
-                                            db_containerType = "wildchest";
-
-                                            switch (wildChestType) {
-
-                                                case STORAGE_UNIT:
-
-                                                    db_container = "storage_chest";
-                                                    break;
-
-                                                case LINKED_CHEST:
-
-                                                    db_container = "linked_chest";
-                                                    break;
-
-                                                case CHEST:
-
-                                                    db_container = "large_chest";
-
-                                            }
-
-                                        } else {
-
-                                            db_containerType = "vanilla";
-                                            int chestSize = vanillaChest.getInventory().getSize();
-
-                                            switch (chestSize) {
-
-                                                case 27:
-
-                                                    db_container = "single_chest";
-                                                    break;
-
-                                                case 54:
-
-                                                    db_container = "double_chest";
-
-                                            }
-
-                                        }
-
-                                        if (shopExists) {
-
-                                            player.sendMessage(shopExistsMessage);
-                                            return;
-
-                                        }
-
-                                        getter.createShop(
-
-                                                db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_chestX, db_chestY, db_chestZ, db_signX, db_signY, db_signZ, db_price, db_amount, db_itemType, db_item
-
-                                        );
-
-                                        signFormat signFormat = new signFormat();
-                                        signFormat.signFormat(db_shopType, db_price, event.getPlayer());
-
-                                        String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
-
-                                        event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
-                                        event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
-                                        event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
-                                        event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
-
-                                        player.sendMessage(shopCreatedMessage);
-
-                                    } else if ((shopPrice > maximumPrice) || (shopPrice <= -1)) {
-
-                                        player.sendMessage(invalidPriceMessage);
-
-                                    } else if ((shopAmount > maximumAmount) || (shopAmount <= 0)) {
-
-                                        player.sendMessage(invalidAmountMessage);
-
-                                    }
-
-                                } else {
-
-                                    player.sendMessage(invalidArgumentsMessage);
-
-                                }
-
-                            } else {
-
-                                player.sendMessage(invalidArgumentsMessage);
-
-                            }
-
-                        }
-
-                    }
-
-                }
+                db_containerType = "wildchest";
+                db_container = wildChest.getChestType().toString();
 
             } else {
 
-                player.sendMessage(noPermissionMessage);
+                db_containerType = "vanilla";
+                int chestSize = vanillaChest.getInventory().getSize();
+
+                switch (chestSize) {
+
+                    case 27:
+
+                        db_container = "SINGLE_CHEST";
+                        break;
+
+                    case 54:
+
+                        db_container = "DOUBLE_CHEST";
+
+                }
 
             }
+
+            if (shopExists) {
+
+                player.sendMessage(msgGetter.getShopExistsMessage());
+                return;
+
+            }
+
+            getter.createShop(
+
+                    db_playerUUID, db_shopType, db_containerType, db_container, db_world, db_chestX, db_chestY, db_chestZ, db_signX, db_signY, db_signZ, db_price, db_amount, db_itemType, db_item
+
+            );
+
+            signFormat signFormat = new signFormat();
+            signFormat.signFormat(db_shopType, db_price, event.getPlayer());
+
+            String[] signLines = configuration.getStringList("signFormat").toArray(new String[0]);
+
+            event.setLine(0, ChatColor.translateAlternateColorCodes('&', signLines[0].replace("{0}", signFormat.getSignShopType())));
+            event.setLine(1, ChatColor.translateAlternateColorCodes('&', signLines[1].replace("{0}", signFormat.getSignPrice()).replace("{1}", String.valueOf(db_amount))));
+            event.setLine(2, ChatColor.translateAlternateColorCodes('&', signLines[2].replace("{0}", db_item)));
+            event.setLine(3, ChatColor.translateAlternateColorCodes('&', signLines[3].replace("{0}", signFormat.getSignPlayerName())));
+
+            player.sendMessage(msgGetter.getShopCreatedMessage());
+
+        } else if ((shopPrice > maximumPrice) || (shopPrice <= -1)) {
+
+            player.sendMessage(msgGetter.getInvalidPriceMessage());
+
+        } else if ((shopAmount > maximumAmount) || (shopAmount <= 0)) {
+
+            player.sendMessage(msgGetter.getInvalidAmountMessage());
 
         }
 

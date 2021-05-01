@@ -1,4 +1,4 @@
-package eu.lukatjee.chestshop.commandHandlers;
+package eu.lukatjee.chestshop.commands;
 
 import eu.lukatjee.chestshop.chestShop;
 import org.bukkit.ChatColor;
@@ -6,19 +6,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public class reloadHandler {
+public class reloadCommand {
 
     public void ReloadCommand(CommandSender sender) {
 
         FileConfiguration configuration = chestShop.plugin.getConfig();
         chestShop plugin = chestShop.plugin;
-
-        /*
-
-            Handles the reloading of the configuration,
-            this is mainly used by the MainCommand class.
-
-         */
 
         if (sender instanceof Player) {
 

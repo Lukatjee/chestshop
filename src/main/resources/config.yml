@@ -81,20 +81,19 @@ deletePermission: "chestshop.delete"
 # Customize the messages the way you want,
 # includes normal color code support.
 
+helpText:
+  - "&7/chestshop&8 -&7 Brings up this menu."
+  - "&7/chestshop reload&8 -&7 Reload the chestshop configuration."
+
 noPermission: "&8&l[&c&li&8&l]&7 Sorry, but you do not have the permission to do this."
 unknownCommand: "&8&l[&c&li&8&l]&7 Unknown command. Execute /chestshop to get a list of commands."
 invalidArguments: "&8&l[&c&li&8&l]&7 It seems like the (amount of) given arguments are invalid."
-
 shopCreated: "&8&l[&c&li&8&l]&7 Successfully created a new chestshop."
 shopExists: "&8&l[&c&li&8&l]&7 This chest is already a chestshop."
-
 shopRemoved: "&8&l[&c&li&8&l]&7 Successfully removed this chestshop."
 shopOwnership: "&8&l[&c&li&8&l]&7 Sorry, but only shop owners or administrators can do this."
-
 invalidItem: "&8&l[&c&li&8&l]&7 Sorry, but the chest does not contain a valid item."
 invalidAmount: "&8&l[&c&li&8&l]&7 Sorry, but the amount you entered is invalid or too high."
 invalidPrice: "&8&l[&c&li&8&l]&7 Sorry, but the price you entered is invalid or too high."
-
 noHopper: "&8&l[&c&li&8&l]&7 Sorry, but you can't place a hopper below a chestshop."
-
 reloadMessage: "&8&l[&c&li&8&l]&7 Successfully reloaded the chat configuration."

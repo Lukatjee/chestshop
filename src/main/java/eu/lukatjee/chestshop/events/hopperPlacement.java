@@ -18,7 +18,7 @@ public class hopperPlacement implements Listener {
     FileConfiguration configuration = chestShop.plugin.getConfig();
 
     @EventHandler
-    public void hopperPlacement(BlockPlaceEvent event) {
+    public void hopperPlacementEvent(BlockPlaceEvent event) {
 
         String noHopperMessage = ChatColor.translateAlternateColorCodes('&', configuration.getString("noHopper"));
 

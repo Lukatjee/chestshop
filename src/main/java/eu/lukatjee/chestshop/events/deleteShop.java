@@ -30,63 +30,66 @@ public class deleteShop implements Listener {
 
         sqlGetter getter = new sqlGetter(chestShop.plugin);
 
-        if (!event.isCancelled()) {
+        if (event.isCancelled()) { return; }
 
-            Block brokenBlock = event.getBlock();
-            String blockObject = null;
+        Block brokenBlock = event.getBlock();
+        String blockObject = null;
 
-            Location location = brokenBlock.getLocation();
+        Location location = brokenBlock.getLocation();
 
-            String locationWorldName = location.getWorld().getName();
-            int x = location.getBlockX();
-            int y = location.getBlockY();
-            int z = location.getBlockZ();
+        String locationWorldName = location.getWorld().getName();
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
 
-            if (brokenBlock.getBlockData() instanceof WallSign) {
+        if (brokenBlock.getBlockData() instanceof WallSign) {
 
-                boolean isChestShop = getter.checkShop_sign(locationWorldName, x, y, z);
-                if (isChestShop) { blockObject = "sign"; }
-
-            } else if (brokenBlock.getType().equals(Material.CHEST)) {
-
-                boolean isChestShop = getter.checkShop_chest(locationWorldName, x, y, z);
-                if (isChestShop) { blockObject = "chest"; }
-
+            boolean isChestShop = getter.checkShop_sign(locationWorldName, x, y, z);
+            if (isChestShop) {
+                blockObject = "sign";
             }
 
-            if (!player.hasPermission(deletePermission)) {
+        } else if (brokenBlock.getType().equals(Material.CHEST)) {
 
-                player.sendMessage(noPermissionMessage);
-                return;
-
+            boolean isChestShop = getter.checkShop_chest(locationWorldName, x, y, z);
+            if (isChestShop) {
+                blockObject = "chest";
             }
 
-            if (blockObject == null) { return; }
-            switch (blockObject) {
+        }
 
-                case "sign":
+        if (!player.hasPermission(deletePermission)) {
 
-                    getter.readShop_sign(locationWorldName, x, y, z);
-                    break;
+            player.sendMessage(noPermissionMessage);
+            return;
 
-                case "chest":
+        }
 
-                    getter.readShop_chest(locationWorldName, x, y, z);
-                    break;
+        if (blockObject == null) { return; }
 
-            }
+        switch (blockObject) {
 
-            if (getter.getPlayerUUID().equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
+            case "sign":
 
-                getter.removeShop(locationWorldName, x, y, z);
-                player.sendMessage(shopRemovedMessage);
+                getter.readShop_sign(locationWorldName, x, y, z);
+                break;
 
-            } else {
+            case "chest":
 
-                player.sendMessage(shopOwnershipMessage);
-                event.setCancelled(true);
+                getter.readShop_chest(locationWorldName, x, y, z);
+                break;
 
-            }
+        }
+
+        if (getter.getPlayerUUID().equals(player.getUniqueId()) || player.hasPermission(adminDeletePermission)) {
+
+            getter.removeShop(locationWorldName, x, y, z);
+            player.sendMessage(shopRemovedMessage);
+
+        } else {
+
+            player.sendMessage(shopOwnershipMessage);
+            event.setCancelled(true);
 
         }
 
